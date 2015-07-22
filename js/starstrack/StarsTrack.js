@@ -86,7 +86,7 @@
 
 		geometry = new THREE.Geometry();
 
-		sprite = THREE.ImageUtils.loadTexture("/images/star.png");
+		sprite = THREE.ImageUtils.loadTexture("images/star.png");
 
 		for ( i = 0; i < 125; i ++ ) {
 			var vertex = new THREE.Vector3();
