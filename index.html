@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>StarsTrack</title>
+		<style type="text/css">
+			body {
+				background: #000;
+				margin: 0;
+				font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+				color: silver;
+				overflow: hidden;
+			}
+
+			img { border: 0; }
+
+			a { color: white; }
+			a:hover { text-decoration: underline }
+
+			#player { display: none; }
+
+			#matte {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: black;
+				opacity: 1;
+				z-index: 1;
+			}
+
+			#info {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				opacity: 0;
+				padding: 10px;
+				width: 100%;
+			}
+
+			#notice {
+				margin: 100px;
+				display: none;
+			}
+
+			.float { overflow: auto; }
+
+			.left { float: left; }
+
+			.right { float: right; }
+		</style>
+		<script src="//www.youtube.com/iframe_api"></script>
+		<script src="/js/threejs/00_three.js"></script>
+		<script src="/js/threejs/BleachBypassShader.js"></script>
+		<script src="/js/threejs/BlendShader.js"></script>
+		<script src="/js/threejs/ConvolutionShader.js"></script>
+		<script src="/js/threejs/CopyShader.js"></script>
+		<script src="/js/threejs/Detector.js"></script>
+		<script src="/js/threejs/EffectComposer.js"></script>
+		<script src="/js/threejs/MaskPass.js"></script>
+		<script src="/js/threejs/RenderPass.js"></script>
+		<script src="/js/threejs/SavePass.js"></script>
+		<script src="/js/threejs/ShaderPass.js"></script>
+		<script src="/js/threejs/VignetteShader.js"></script>
+	</head>
+	<body>
+		<div id="matte"></div>
+		<div id="notice">
+			<h1>Your browser doesn't seem to support WebGL.</h1>
+			<h2>Please consider <a href="http://get.webgl.org/">upgrading to one that does</a>.</h2>
+		</div>
+		<div id="player"></div>
+		<div id="info" class="float">
+			<div class="left">
+				<h1>
+					<a href="https://www.youtube.com/watch?v=QJZ_agVJqu8" title="Listen on YouTube">Ilia's Theme</a>
+					<span style="font-size: 0.5em;">
+						(<a href="http://wikipedia.org/wiki/Jerry_Goldsmith" target="_blank" title="Jerry Goldsmith on Wikipedia">Jerry Goldsmith</a>)
+					</span>
+				</h1>
+				<h2>Star Trek: The Motion Picture</h2>
+			</div>
+		</div>
+		<script src="/js/starstrack/StarsTrack.js"></script>
+		<script>
+			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+			ga('create', 'UA-28572873-3', 'btleffler.github.io/StarsTrack');
+			ga('send', 'pageview');
+		</script>
+	</body>
+</html>
