@@ -4,7 +4,8 @@
 	var camera, scene, renderer, particles, geometry, material, i, h, sprite,
 		particle, init, animate, player, matte, opacity, effectBlend, effectSave,
 		effectVignette, renderTarget, renderTargetParams, renderModel, composer,
-		info, iOpacity, showMatte = true, showInfo = false;
+		info, iOpacity, positions, showMatte = true, showInfo = false,
+		NUM_PARTICLES = 250;
 
 	matte = document.getElementById("matte");
 	matte.style.opacity = opacity = 1;
@@ -12,7 +13,7 @@
 	info = document.getElementById("info");
 	info.style.opacity = iOpacity = 0;
 
-	function onWindowResize() {
+	function onWindowResize () {
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 
@@ -20,27 +21,26 @@
 		composer.setSize(window.innerWidth, window.innerHeight);
 	}
 
-	function resetParticle(particle) {
-		particle.x = Math.random() * 1000 - 500;
-		particle.y = Math.random() * 1000 - 500;
-		particle.z = 1000;
-	}
+	function render () {
+		var vertices = geometry.getAttribute("position"),
+			len = vertices.array.length;
 
-	function render() {
-		var vertices = geometry.vertices,
-			len = vertices.length;
+		for (i = 0; i < len; i += 3) {
+			vertices.array[i + 2] -= 2.5;
 
-		for (i = 0; i < len; i++) {
-			particle = vertices[i];
-
-			particle.x -= 0.5;
-			particle.z -= 2.5;
-
-			if (particle.z <= -1000)
-				resetParticle(particle);
+			if (vertices.array[i + 2] <= -1000) {
+				positions[i] = Math.random() * 2000 - 1000;
+				positions[i + 1] = Math.random() * 2000 - 1000;
+				positions[i + 2] = Math.random() * 2000 + 1000;
+			} else {
+				vertices.array[i] -= 0.5;
+			}
 		}
 
-		geometry.verticesNeedUpdate = true;
+		vertices.needsUpdate = true;
+
+		geometry.addAttribute("position", vertices);
+		geometry.computeBoundingSphere();
 		renderer.clear();
 		composer.render();
 
@@ -58,7 +58,7 @@
 		}
 	}
 
-	animate = function animate() {
+	animate = function animate () {
 		requestAnimationFrame(animate);
 		render();
 	};
@@ -72,11 +72,17 @@
 	// Handle any errors with incomplete WebGL implementations
 	window.addEventListener("error", showNotice, false);
 
-	init = (function init() {
+	init = (function init () {
 		if (!Detector.webgl)
 			return showNotice();
 
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
+		camera = new THREE.PerspectiveCamera(
+			75,
+			window.innerWidth / window.innerHeight,
+			1,
+			2000
+		);
+
 		camera.position.z = 1000;
 
 		scene = new THREE.Scene();
@@ -84,28 +90,32 @@
 
 		camera.lookAt(scene.position);
 
-		geometry = new THREE.Geometry();
+		geometry = new THREE.BufferGeometry();
+		positions = new Float32Array(NUM_PARTICLES * 3)
 
 		sprite = THREE.ImageUtils.loadTexture("images/star.png");
+		sprite.minFilter = THREE.LinearFilter;
 
-		for ( i = 0; i < 125; i ++ ) {
-			var vertex = new THREE.Vector3();
-			vertex.x = Math.random() * 2000 - 1000;
-			vertex.y = Math.random() * 2000 - 1000;
-			vertex.z = Math.random() * 2000 - 1000;
-			geometry.vertices.push( vertex );
+		// Calculate initial positions
+		for (i = 0; i < NUM_PARTICLES; i += 3) {
+			positions[i] = Math.random() * 2000 - 1000;
+			positions[i + 1] = Math.random() * 2000 - 1000;
+			positions[i + 2] = Math.random() * 2000 - 1000;
 		}
 
-		material = new THREE.ParticleSystemMaterial({
-			size: 7,
-			map: sprite,
-			blending: THREE.AdditiveBlending,
-			depthTest: false,
-			transparent : true,
-			color: new THREE.Color(0xffffff)
+		geometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
+		geometry.computeBoundingSphere();
+
+		material = new THREE.PointCloudMaterial({
+			"size": 7,
+			"map": sprite,
+			"blending": THREE.AdditiveBlending,
+			"depthTest": false,
+			"transparent" : true,
+			"color": new THREE.Color(0xffffff)
 		});
 
-		particles = new THREE.ParticleSystem(geometry, material);
+		particles = new THREE.PointCloud(geometry, material);
 
 		scene.add(particles);
 
@@ -122,9 +132,22 @@
 			"stencilBuffer": false
 		};
 
-		renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParams);
+		renderTarget = new THREE.WebGLRenderTarget(
+			window.innerWidth,
+			window.innerHeight,
+			renderTargetParams
+		);
+
 		effectBlend = new THREE.ShaderPass(THREE.BlendShader, "tDiffuse1");
-		effectSave = new THREE.SavePass(new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, renderTargetParams));
+
+		effectSave = new THREE.SavePass(
+			new THREE.WebGLRenderTarget(
+				window.innerWidth,
+				window.innerHeight,
+				renderTargetParams
+			)
+		);
+
 		effectVignette = new THREE.ShaderPass(THREE.VignetteShader);
 		renderModel = new THREE.RenderPass(scene, camera);
 
