@@ -91,7 +91,7 @@
 		camera.lookAt(scene.position);
 
 		geometry = new THREE.BufferGeometry();
-		positions = new Float32Array(NUM_PARTICLES * 3)
+		positions = new Float32Array(NUM_PARTICLES * 3);
 
 		sprite = THREE.ImageUtils.loadTexture("images/star.png");
 		sprite.minFilter = THREE.LinearFilter;
